@@ -1,14 +1,12 @@
-import { Page } from 'puppeteer';
-
-export async function waitForElementVisible(page: Page, selector: string): Promise<void> {
+export async function waitForElementVisible(selector: string): Promise<void> {
   await page.waitForSelector(selector, { visible: true, timeout: 10000 });
 }
 
-export async function waitForElementNotVisible(page: Page, selector: string): Promise<void> {
+export async function waitForElementNotVisible(selector: string): Promise<void> {
   await page.waitForSelector(selector, { hidden: true, timeout: 10000 });
 }
 
-export async function waitForElementEnabled(page: Page, selector: string): Promise<void> {
+export async function waitForElementEnabled(selector: string): Promise<void> {
   await page.waitForFunction((selector) => {
     const element = document.querySelector(selector);
 
@@ -16,11 +14,7 @@ export async function waitForElementEnabled(page: Page, selector: string): Promi
   }, {}, selector);
 }
 
-export async function waitForParentElementToHaveClass(
-  page: Page,
-  selector: string,
-  parentClass: string,
-): Promise<void> {
+export async function waitForParentElementToHaveClass(selector: string, parentClass: string): Promise<void> {
   await page.waitForFunction((selector, parentClass) => {
     const element = document.querySelector(selector);
 
@@ -28,7 +22,7 @@ export async function waitForParentElementToHaveClass(
   }, {}, selector, parentClass);
 }
 
-export async function elementExists(page: Page, selector: string): Promise<boolean> {
+export async function elementExists(selector: string): Promise<boolean> {
   return await page.evaluate((selector) => {
     const element = document.querySelector(selector) || false;
 
@@ -36,7 +30,7 @@ export async function elementExists(page: Page, selector: string): Promise<boole
   }, selector);
 }
 
-export async function elementHasText(page: Page, selector: string, text: string): Promise<boolean> {
+export async function elementHasText(selector: string, text: string): Promise<boolean> {
   return await page.evaluate((selector, text) => {
     const element = document.querySelector(selector);
 
@@ -44,6 +38,6 @@ export async function elementHasText(page: Page, selector: string, text: string)
   }, selector, text);
 }
 
-export async function takeScreenshot(page: Page, fileName: string = (Date.now()).toString()): Promise<void> {
+export async function takeScreenshot(fileName: string = (Date.now()).toString()): Promise<void> {
   await page.screenshot({ path: `sshots/${fileName}.png` });
 }

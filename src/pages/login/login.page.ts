@@ -1,4 +1,3 @@
-import { Page } from 'puppeteer';
 import {
   waitForElementNotVisible,
   waitForElementVisible,
@@ -23,17 +22,17 @@ import {
 import { PageActionOptionsInterface } from '../shared.interface';
 import { decorateWithExecutionTimeLog } from '../../helpers/util.helper';
 
-export async function login(page: Page, options: PageActionOptionsInterface = {}): Promise<void> {
+export async function login(options: PageActionOptionsInterface = {}): Promise<void> {
   const login = async () => {
     await page.goto(LOGIN_URL);
-    await waitForElementVisible(page, LOGIN_SELECTOR_FORM);
-    await selectOption(page, LOGIN_SELECTOR_PROFILE, '3');
-    await typeOnInput(page, LOGIN_SELECTOR_USERNAME, LOGIN_USERNAME);
-    await typeOnInput(page, LOGIN_SELECTOR_PASSWORD, LOGIN_PASSWORD);
-    await tickCheckbox(page, LOGIN_SELECTOR_TERMS);
-    await clickOnButton(page, LOGIN_SELECTOR_SUBMIT);
+    await waitForElementVisible(LOGIN_SELECTOR_FORM);
+    await selectOption(LOGIN_SELECTOR_PROFILE, '3');
+    await typeOnInput(LOGIN_SELECTOR_USERNAME, LOGIN_USERNAME);
+    await typeOnInput(LOGIN_SELECTOR_PASSWORD, LOGIN_PASSWORD);
+    await tickCheckbox(LOGIN_SELECTOR_TERMS);
+    await clickOnButton(LOGIN_SELECTOR_SUBMIT);
     await page.waitForNavigation();
-    await waitForElementNotVisible(page, LOGIN_SELECTOR_FORM);
+    await waitForElementNotVisible(LOGIN_SELECTOR_FORM);
   };
   const decoratedWithExecutionTimeLogLogin = decorateWithExecutionTimeLog(login, 'Logging in');
 

@@ -1,4 +1,3 @@
-import { Page } from 'puppeteer';
 import {
   waitForElementNotVisible,
   waitForElementVisible,
@@ -9,11 +8,11 @@ import { LOGIN_SELECTOR_FORM } from '../login/login.constant';
 import { PageActionOptionsInterface } from '../shared.interface';
 import { decorateWithExecutionTimeLog } from '../../helpers/util.helper';
 
-export async function logout(page: Page, options: PageActionOptionsInterface = {}): Promise<void> {
+export async function logout(options: PageActionOptionsInterface = {}): Promise<void> {
   const logout = async () => {
-    await clickOnButton(page, LOGOUT_SELECTOR_NAV_LIST_ITEM_ANCHOR);
-    await waitForElementNotVisible(page, LOGOUT_SELECTOR_NAV_LIST_ITEM_ANCHOR);
-    await waitForElementVisible(page, LOGIN_SELECTOR_FORM);
+    await clickOnButton(LOGOUT_SELECTOR_NAV_LIST_ITEM_ANCHOR);
+    await waitForElementNotVisible(LOGOUT_SELECTOR_NAV_LIST_ITEM_ANCHOR);
+    await waitForElementVisible(LOGIN_SELECTOR_FORM);
   };
   const decoratedWithExecutionTimeLogLogout = decorateWithExecutionTimeLog(logout, 'Logging out');
 

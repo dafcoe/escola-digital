@@ -1,4 +1,3 @@
-import { Page } from 'puppeteer';
 import {
   clickOnButton,
   getInputValue,
@@ -38,21 +37,20 @@ import { SearchResultType } from '../assignments.type';
 import { AssignmentInterface } from '../assignments.interface';
 
 export async function searchAssignmentByNif(
-  page: Page,
   nif: string,
   options: PageActionOptionsInterface = {},
 ): Promise<AssignmentInterface> {
   const searchAssignmentByNif = async (): Promise<AssignmentInterface> => {
-    await clickOnButton(page, ASSIGNMENTS_SELECTOR_NAV_LIST_ITEM_ANCHOR);
-    await waitForElementNotVisible(page, SHARED_SELECTOR_LOADING);
-    await selectOption(page, ASSIGNMENTS_SELECTOR_FASE, '1');
-    await waitForElementNotVisible(page, SHARED_SELECTOR_LOADING);
-    await clickOnButton(page, ASSIGNMENTS_SELECTOR_SEARCH_TAB);
-    await waitForElementVisible(page, ASSIGNMENTS_SELECTOR_SEARCH_TAB_SELECTED);
-    await typeOnInput(page, ASSIGNMENTS_SELECTOR_SEARCH_NIF, nif);
-    await clickOnButton(page, ASSIGNMENTS_SELECTOR_SEARCH_SUBMIT);
+    await clickOnButton(ASSIGNMENTS_SELECTOR_NAV_LIST_ITEM_ANCHOR);
+    await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
+    await selectOption(ASSIGNMENTS_SELECTOR_FASE, '1');
+    await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
+    await clickOnButton(ASSIGNMENTS_SELECTOR_SEARCH_TAB);
+    await waitForElementVisible(ASSIGNMENTS_SELECTOR_SEARCH_TAB_SELECTED);
+    await typeOnInput(ASSIGNMENTS_SELECTOR_SEARCH_NIF, nif);
+    await clickOnButton(ASSIGNMENTS_SELECTOR_SEARCH_SUBMIT);
     await page.waitForNavigation();
-    return await collectAssignment(page, nif);
+    return await collectAssignment(nif);
   };
   const decoratedWithExecutionTimeLogSearchAssignmentByNif = decorateWithExecutionTimeLog(
     searchAssignmentByNif,
@@ -64,68 +62,67 @@ export async function searchAssignmentByNif(
     : await decoratedWithExecutionTimeLogSearchAssignmentByNif();
 }
 
-async function collectAssignment(page: Page, nif: string): Promise<AssignmentInterface> {
+async function collectAssignment(nif: string): Promise<AssignmentInterface> {
   const searchResultTypeActionMap: Record<SearchResultType, CallableFunction> = {
     invalid: collectAssignmentFromSearchResultInvalid,
     assigned: collectAssignmentFromSearchResultAssigned,
     unassigned: collectAssignmentFromSearchResultUnassigned,
     'unassigned-and-rejected': collectAssignmentFromSearchResultUnassignedAndRejected,
   };
-  const searchResultType = await getSearchResultType(page);
+  const searchResultType = await getSearchResultType();
 
   if (!searchResultType) throw new Error('An unexpected error has occurred while collecting an assignment');
 
-  return await searchResultTypeActionMap[searchResultType](page, nif);
+  return await searchResultTypeActionMap[searchResultType](nif);
 }
 
-async function getSearchResultType(page: Page): Promise<SearchResultType | undefined> {
-  const isInvalid = await isSearchResultInvalid(page);
+async function getSearchResultType(): Promise<SearchResultType | undefined> {
+  const isInvalid = await isSearchResultInvalid();
   if (isInvalid) return 'invalid';
 
-  const isAssigned = await isSearchResultAssigned(page);
+  const isAssigned = await isSearchResultAssigned();
   if (isAssigned) return 'assigned';
 
-  const isUnassigned = await isSearchResultUnassigned(page);
+  const isUnassigned = await isSearchResultUnassigned();
   if (isUnassigned) return 'unassigned';
 
-  const isUnassignedAndRejected = await isSearchResultUnassignedAndRejected(page);
+  const isUnassignedAndRejected = await isSearchResultUnassignedAndRejected();
   if (isUnassignedAndRejected) return 'unassigned-and-rejected';
 
   return undefined;
 }
 
-async function isSearchResultInvalid(page: Page): Promise<boolean> {
+async function isSearchResultInvalid(): Promise<boolean> {
   return await elementHasText(
-    page,
     SHARED_SELECTOR_ALERT_INFO,
     'O aluno não pertence a este AE/EnA ou deixou de beneficiar de ASE A, B ou C',
   );
 }
 
-async function isSearchResultAssigned(page: Page): Promise<boolean> {
-  const hasFase = await elementHasText(page, 'table tbody tr:first-of-type td:first-of-type', 'fase');
-  const hasAssignedKit = await elementHasText(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(5)', 'sim');
+async function isSearchResultAssigned(): Promise<boolean> {
+  const hasFase = await elementHasText('table tbody tr:first-of-type td:first-of-type', 'fase');
+  const hasAssignedKit = await elementHasText('table tbody tr:nth-of-type(2) td:nth-of-type(5)', 'sim');
 
   return hasFase && hasAssignedKit;
 }
 
-async function isSearchResultUnassigned(page: Page): Promise<boolean> {
-  const hasFase = await elementHasText(page, 'table tbody tr:first-of-type td:first-of-type', 'fase');
-  const hasAssignedKit = await elementHasText(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'sim');
-  const hasRejectedKit = await elementHasText(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(5)', 'sim');
+async function isSearchResultUnassigned(): Promise<boolean> {
+  const hasFase = await elementHasText('table tbody tr:first-of-type td:first-of-type', 'fase');
+  const hasAssignedKit = await elementHasText('table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'sim');
+  const hasRejectedKit = await elementHasText('table tbody tr:nth-of-type(2) td:nth-of-type(5)', 'sim');
 
   return !hasFase && !hasAssignedKit && !hasRejectedKit;
 }
 
-async function isSearchResultUnassignedAndRejected(page: Page): Promise<boolean> {
-  const hasFase = await elementHasText(page, 'table tbody tr:first-of-type td:first-of-type', 'fase');
-  const hasAssignedKit = await elementHasText(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'sim');
-  const hasRejectedKit = await elementHasText(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(5)', 'sim');
+async function isSearchResultUnassignedAndRejected(): Promise<boolean> {
+  const hasFase = await elementHasText('table tbody tr:first-of-type td:first-of-type', 'fase');
+  const hasAssignedKit = await elementHasText('table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'sim');
+  const hasRejectedKit = await elementHasText('table tbody tr:nth-of-type(2) td:nth-of-type(5)', 'sim');
 
   return !hasFase && !hasAssignedKit && hasRejectedKit;
 }
 
-async function collectAssignmentFromSearchResultInvalid(page: Page, nif: string): Promise<AssignmentInterface> {
+async function collectAssignmentFromSearchResultInvalid(nif: string): Promise<AssignmentInterface> {
   return {
     nif,
     name: '',
@@ -137,17 +134,17 @@ async function collectAssignmentFromSearchResultInvalid(page: Page, nif: string)
   };
 }
 
-async function collectAssignmentFromSearchResultAssigned(page: Page, nif: string): Promise<AssignmentInterface> {
-  await clickOnButton(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(6) a');
-  await waitForElementNotVisible(page, SHARED_SELECTOR_LOADING);
+async function collectAssignmentFromSearchResultAssigned(nif: string): Promise<AssignmentInterface> {
+  await clickOnButton('table tbody tr:nth-of-type(2) td:nth-of-type(6) a');
+  await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
   await wait(500);
 
-  const student = await elementExists(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
-    ? await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
-    : await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT_ALTERNATIVE);
+  const student = await elementExists(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
+    ? await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
+    : await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT_ALTERNATIVE);
   const name = student.split('-').map((studentPart) => studentPart.trim())[1];
 
-  const school = await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_SCHOOL);
+  const school = await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_SCHOOL);
 
   const [pcType, pcState] = await page.evaluate((searchText) => {
     const rows = Array.from(document.querySelectorAll('table tr'));
@@ -173,13 +170,13 @@ async function collectAssignmentFromSearchResultAssigned(page: Page, nif: string
   };
 }
 
-async function collectAssignmentFromSearchResultUnassigned(page: Page, nif: string): Promise<AssignmentInterface> {
-  await clickOnButton(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(6) a:first-of-type');
-  await waitForElementNotVisible(page, SHARED_SELECTOR_LOADING);
+async function collectAssignmentFromSearchResultUnassigned(nif: string): Promise<AssignmentInterface> {
+  await clickOnButton('table tbody tr:nth-of-type(2) td:nth-of-type(6) a:first-of-type');
+  await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
   await wait(250);
 
-  const name = await getSelectedOption(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_STUDENT);
-  const school = await getSelectedOption(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_SCHOOL);
+  const name = await getSelectedOption(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_STUDENT);
+  const school = await getSelectedOption(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_SCHOOL);
 
   return {
     nif,
@@ -192,16 +189,13 @@ async function collectAssignmentFromSearchResultUnassigned(page: Page, nif: stri
   };
 }
 
-async function collectAssignmentFromSearchResultUnassignedAndRejected(
-  page: Page,
-  nif: string,
-): Promise<AssignmentInterface> {
-  await clickOnButton(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(6) a:first-of-type');
-  await waitForElementNotVisible(page, SHARED_SELECTOR_LOADING);
+async function collectAssignmentFromSearchResultUnassignedAndRejected(nif: string): Promise<AssignmentInterface> {
+  await clickOnButton('table tbody tr:nth-of-type(2) td:nth-of-type(6) a:first-of-type');
+  await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
   await wait(250);
 
-  const name = await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_STUDENT);
-  const school = await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_SCHOOL);
+  const name = await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_STUDENT);
+  const school = await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_SCHOOL);
 
   return {
     nif,

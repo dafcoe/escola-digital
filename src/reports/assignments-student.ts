@@ -1,4 +1,3 @@
-import { Page } from 'puppeteer';
 import { PageActionOptionsInterface } from '../pages/shared.interface';
 import { AssignmentInterface } from '../pages/assignments/assignments.interface';
 import { writeDataToSpreadsheet } from '../spreadsheet/spreadsheet-writer';
@@ -6,7 +5,6 @@ import { decorateWithExecutionTimeLog } from '../helpers/util.helper';
 import { searchAssignmentByNif } from '../pages/assignments/search/search.page';
 
 export async function generateStudentAssignmentsByClassNameReport(
-  page: Page,
   studentNifsByClassName: Record<string, string[]>,
   options: PageActionOptionsInterface = {},
 ): Promise<void> {
@@ -16,7 +14,7 @@ export async function generateStudentAssignmentsByClassNameReport(
   const report = async () => {
     for (let index = 0; index < Object.keys(studentNifsByClassName).length; index++) {
       const [className, studentNifs] = Object.entries(studentNifsByClassName)[index];
-      studentAssignmentsByClassName[className] = await searchAssignmentByNifs(page, studentNifs);
+      studentAssignmentsByClassName[className] = await searchAssignmentByNifs(studentNifs);
     }
 
     writeDataToSpreadsheet(hydrateStudentAssignmentsByClassName(studentAssignmentsByClassName), bookName);
@@ -30,11 +28,11 @@ export async function generateStudentAssignmentsByClassNameReport(
   return options.skipTimeLog ? await report() : await decoratedWithExecutionTimeLogReport();
 }
 
-async function searchAssignmentByNifs(page: Page, nifs: string[]): Promise<AssignmentInterface[]> {
+async function searchAssignmentByNifs(nifs: string[]): Promise<AssignmentInterface[]> {
   const assignments: AssignmentInterface[] = [];
 
   for (let index = 0; index < nifs.length; index++) {
-    assignments.push(await searchAssignmentByNif(page, nifs[index]));
+    assignments.push(await searchAssignmentByNif(nifs[index]));
   }
 
   return assignments;
