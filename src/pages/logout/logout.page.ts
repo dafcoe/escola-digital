@@ -14,5 +14,5 @@ export async function logout(page: Page, options: PageActionOptionsInterface = {
   };
   const decoratedWithExecutionTimeLogLogout = decorateWithExecutionTimeLog(logout, 'Logging out');
 
-  options.skipTimeLog ? await logout() : await decoratedWithExecutionTimeLogLogout();
+  return options.skipTimeLog ? await logout() : await decoratedWithExecutionTimeLogLogout();
 }

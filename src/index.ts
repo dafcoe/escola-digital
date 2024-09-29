@@ -10,18 +10,9 @@ async function run() {
   await page.setViewport({ width: 1920, height: 1080 });
 
   await login(page, { skipTimeLog: false });
-
-  const assignments = await searchAssignmentByNifs(page, [
-    '12345',
-    '253270154',
-    '280146540',
-    '255007736',
-  ]);
-
-  // await page.screenshot({path: 'sshots/search.png'});
-  console.log(assignments);
-
+  await searchAssignmentByNifs(page, []);
   await logout(page);
+  // await page.screenshot({path: 'sshots/search.png'});
 
   await browser.close();
 }

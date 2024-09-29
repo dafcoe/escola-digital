@@ -29,5 +29,5 @@ export async function login(page: Page, options: PageActionOptionsInterface = {}
   };
   const decoratedWithExecutionTimeLogLogin = decorateWithExecutionTimeLog(login, 'Logging in');
 
-  options.skipTimeLog ? await login() : await decoratedWithExecutionTimeLogLogin();
+  return options.skipTimeLog ? await login() : await decoratedWithExecutionTimeLogLogin();
 }

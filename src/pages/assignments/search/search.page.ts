@@ -45,10 +45,8 @@ export async function searchAssignmentByNif(
     await typeOnInput(page, ASSIGNMENTS_SELECTOR_SEARCH_NIF, nif);
     await clickOnButton(page, ASSIGNMENTS_SELECTOR_SEARCH_SUBMIT);
     await page.waitForNavigation();
-    const assignment = await collectAssignment(page, nif);
-
-    return assignment;
-  }
+    return await collectAssignment(page, nif);
+  };
   const decoratedWithExecutionTimeLogSearchAssignmentByNif = decorateWithExecutionTimeLog(
     searchAssignmentByNif,
     `Searching assignment for nif ${nif}`,
@@ -70,9 +68,7 @@ async function collectAssignment(page: Page, nif: string): Promise<AssignmentInt
 
   if (!searchResultType) throw new Error('An unexpected error has occurred while collecting an assignment');
 
-  const assignment = await searchResultTypeActionMap[searchResultType](page, nif);
-
-  return assignment;
+  return await searchResultTypeActionMap[searchResultType](page, nif);
 }
 
 async function getSearchResultType(page: Page): Promise<SearchResultType | undefined> {
@@ -92,13 +88,11 @@ async function getSearchResultType(page: Page): Promise<SearchResultType | undef
 }
 
 async function isSearchResultInvalid(page: Page): Promise<boolean> {
-  const isInvalid = await elementHasText(
+  return await elementHasText(
     page,
     SHARED_SELECTOR_ALERT_INFO,
     'O aluno não pertence a este AE/EnA ou deixou de beneficiar de ASE A, B ou C',
   );
-
-  return isInvalid;
 }
 
 async function isSearchResultAssigned(page: Page): Promise<boolean> {

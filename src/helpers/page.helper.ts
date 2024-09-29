@@ -29,21 +29,17 @@ export async function waitForParentElementToHaveClass(
 }
 
 export async function elementExists(page: Page, selector: string): Promise<boolean> {
-  const exists = await page.evaluate((selector) => {
+  return await page.evaluate((selector) => {
     const element = document.querySelector(selector);
 
     return !element;
   }, selector);
-
-  return exists;
 }
 
 export async function elementHasText(page: Page, selector: string, text: string): Promise<boolean> {
-  const hasText = await page.evaluate((selector, text) => {
+  return await page.evaluate((selector, text) => {
     const element = document.querySelector(selector);
 
     return (element?.textContent || '').trim().toLowerCase().includes(text.toLowerCase());
   }, selector, text);
-
-  return hasText;
 }
