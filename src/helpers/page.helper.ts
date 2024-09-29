@@ -30,9 +30,9 @@ export async function waitForParentElementToHaveClass(
 
 export async function elementExists(page: Page, selector: string): Promise<boolean> {
   return await page.evaluate((selector) => {
-    const element = document.querySelector(selector);
+    const element = document.querySelector(selector) || false;
 
-    return !element;
+    return !!element;
   }, selector);
 }
 
@@ -42,4 +42,8 @@ export async function elementHasText(page: Page, selector: string, text: string)
 
     return (element?.textContent || '').trim().toLowerCase().includes(text.toLowerCase());
   }, selector, text);
+}
+
+export async function takeScreenshot(page: Page, fileName: string = (Date.now()).toString()): Promise<void> {
+  await page.screenshot({ path: `sshots/${fileName}.png` });
 }

@@ -6,10 +6,13 @@ import {
   selectOption,
   typeOnInput
 } from '../../../helpers/action-form.helper';
-import { ASSIGNMENTS_SELECTOR_FASE, ASSIGNMENTS_SELECTOR_NAV_LIST_ITEM_ANCHOR } from '../assignments.constant';
+import {
+  ASSIGNMENTS_SELECTOR_FASE,
+  ASSIGNMENTS_SELECTOR_NAV_LIST_ITEM_ANCHOR,
+} from '../assignments.constant';
 import {
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_SCHOOL,
-  ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT,
+  ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT_ALTERNATIVE,
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_SCHOOL,
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_STUDENT,
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_SCHOOL,
@@ -20,11 +23,15 @@ import {
   ASSIGNMENTS_SELECTOR_SEARCH_TAB_SELECTED,
 } from './search.constant';
 import {
+  elementExists,
   elementHasText,
   waitForElementNotVisible,
-  waitForElementVisible
+  waitForElementVisible,
 } from '../../../helpers/page.helper';
-import { SHARED_SELECTOR_ALERT_INFO, SHARED_SELECTOR_LOADING } from '../../shared.constant';
+import {
+  SHARED_SELECTOR_ALERT_INFO,
+  SHARED_SELECTOR_LOADING,
+} from '../../shared.constant';
 import { PageActionOptionsInterface } from '../../shared.interface';
 import { decorateWithExecutionTimeLog, wait } from '../../../helpers/util.helper';
 import { SearchResultType } from '../assignments.type';
@@ -133,9 +140,11 @@ async function collectAssignmentFromSearchResultInvalid(page: Page, nif: string)
 async function collectAssignmentFromSearchResultAssigned(page: Page, nif: string): Promise<AssignmentInterface> {
   await clickOnButton(page, 'table tbody tr:nth-of-type(2) td:nth-of-type(6) a');
   await waitForElementNotVisible(page, SHARED_SELECTOR_LOADING);
-  await wait(250);
+  await wait(500);
 
-  const student = await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT);
+  const student = await elementExists(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
+    ? await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
+    : await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT_ALTERNATIVE);
   const name = student.split('-').map((studentPart) => studentPart.trim())[1];
 
   const school = await getInputValue(page, ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_SCHOOL);

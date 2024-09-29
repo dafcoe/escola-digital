@@ -1,5 +1,9 @@
 import { Page } from 'puppeteer';
-import { waitForElementEnabled, waitForElementVisible, waitForParentElementToHaveClass } from './page.helper';
+import {
+  waitForElementEnabled,
+  waitForElementVisible,
+  waitForParentElementToHaveClass,
+} from './page.helper';
 import { wait } from './util.helper';
 
 export async function typeOnInput(page: Page, selector: string, value: string): Promise<void> {

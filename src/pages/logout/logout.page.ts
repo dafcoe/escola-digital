@@ -1,5 +1,8 @@
 import { Page } from 'puppeteer';
-import { waitForElementNotVisible, waitForElementVisible } from '../../helpers/page.helper';
+import {
+  waitForElementNotVisible,
+  waitForElementVisible,
+} from '../../helpers/page.helper';
 import { clickOnButton } from '../../helpers/action-form.helper';
 import { LOGOUT_SELECTOR_NAV_LIST_ITEM_ANCHOR } from './logout.constant';
 import { LOGIN_SELECTOR_FORM } from '../login/login.constant';

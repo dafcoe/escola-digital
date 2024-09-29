@@ -1,6 +1,14 @@
 import { Page } from 'puppeteer';
-import { waitForElementNotVisible, waitForElementVisible } from '../../helpers/page.helper';
-import { clickOnButton, selectOption, tickCheckbox, typeOnInput } from '../../helpers/action-form.helper';
+import {
+  waitForElementNotVisible,
+  waitForElementVisible,
+} from '../../helpers/page.helper';
+import {
+  clickOnButton,
+  selectOption,
+  tickCheckbox,
+  typeOnInput,
+} from '../../helpers/action-form.helper';
 import {
   LOGIN_PASSWORD,
   LOGIN_SELECTOR_FORM,
