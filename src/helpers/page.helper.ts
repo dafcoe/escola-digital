@@ -1,9 +1,9 @@
 export async function waitForElementVisible(selector: string): Promise<void> {
-  await page.waitForSelector(selector, { visible: true, timeout: 10000 });
+  await page.waitForSelector(selector, { visible: true, timeout: 20000 });
 }
 
 export async function waitForElementNotVisible(selector: string): Promise<void> {
-  await page.waitForSelector(selector, { hidden: true, timeout: 10000 });
+  await page.waitForSelector(selector, { hidden: true, timeout: 20000 });
 }
 
 export async function waitForElementEnabled(selector: string): Promise<void> {
