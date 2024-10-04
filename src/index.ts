@@ -16,9 +16,13 @@ async function run(): Promise<void> {
 }
 
 async function generateStudentReports(): Promise<void> {
-  const studentNifsByClassName: Record<string, string[]> = {};
+  const studentNifsByClassNameAndGrade: Record<string, Record<string, string[]>> = {};
 
-  await generateStudentAssignmentsByClassNameReport(studentNifsByClassName);
+  for (let index = 0; index < Object.entries(studentNifsByClassNameAndGrade).length; index++) {
+    const [grade, studentNifs] = Object.entries(studentNifsByClassNameAndGrade)[index];
+
+    await generateStudentAssignmentsByClassNameReport(studentNifs, `student-assignments-${grade}`);
+  }
 }
 
 run();

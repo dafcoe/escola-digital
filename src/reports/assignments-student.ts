@@ -6,18 +6,18 @@ import { searchAssignmentByNif } from '../pages/assignments/search/search.page';
 
 export async function generateStudentAssignmentsByClassNameReport(
   studentNifsByClassName: Record<string, string[]>,
+  reportName: string = 'student-assignments-by-class-name',
   options: PageActionOptionsInterface = {},
 ): Promise<void> {
-  const bookName = 'student-assignments-by-class-name';
   const studentAssignmentsByClassName: Record<string, AssignmentInterface[]> = {};
 
   const report = async () => {
     for (let index = 0; index < Object.keys(studentNifsByClassName).length; index++) {
       const [className, studentNifs] = Object.entries(studentNifsByClassName)[index];
-      studentAssignmentsByClassName[className] = await searchAssignmentByNifs(studentNifs);
+      studentAssignmentsByClassName[className] = await searchAssignmentsByClassName(className, studentNifs);
     }
 
-    writeDataToSpreadsheet(hydrateStudentAssignmentsByClassName(studentAssignmentsByClassName), bookName);
+    writeDataToSpreadsheet(hydrateStudentAssignmentsByClassName(studentAssignmentsByClassName), reportName);
   };
 
   const decoratedWithExecutionTimeLogReport = decorateWithExecutionTimeLog(
@@ -26,6 +26,23 @@ export async function generateStudentAssignmentsByClassNameReport(
   );
 
   return options.skipTimeLog ? await report() : await decoratedWithExecutionTimeLogReport();
+}
+
+async function searchAssignmentsByClassName(
+  className: string,
+  nifs: string[],
+  options: PageActionOptionsInterface = {},
+): Promise<AssignmentInterface[]> {
+  const search = async () => {
+    return await searchAssignmentByNifs(nifs);
+  };
+
+  const decoratedWithExecutionTimeLogSearch = decorateWithExecutionTimeLog(
+    search,
+    `️Searching assignments for class "${className}"`,
+  );
+
+  return options.skipTimeLog ? await search() : await decoratedWithExecutionTimeLogSearch();
 }
 
 async function searchAssignmentByNifs(nifs: string[]): Promise<AssignmentInterface[]> {
