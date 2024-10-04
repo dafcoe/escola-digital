@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",              // Use modern JavaScript features
+    "target": "ES2021",              // Use modern JavaScript features
     "module": "commonjs",            // Node.js-style modules
     "strict": true,                  // Enable strict type-checking options
     "esModuleInterop": true,         // Allows default imports from CommonJS modules

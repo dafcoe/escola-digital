@@ -65,18 +65,20 @@ function hydrateStudentAssignmentsByClassName(
 }
 
 function hydrateStudentAssignment(
-  { nif, name, school, hasKit, hasRejectedKit, pcType, pcState }: AssignmentInterface,
+  { nif, name, tier, school, hasKit, hasRejectedKit, pcType, pcState }: AssignmentInterface,
 ): Record<string, string> {
+  const mappedTier = tier.toLowerCase() === 'sem escalão' ? '' : tier.toUpperCase().split('ESCALÃO ')[1];
   const mappedHasKit = !school ? '' : hasKit ? 'sim' : 'não';
   const mappedHasRejectedKit = !school ? '' : hasKit ? '' : hasRejectedKit ? 'sim' : 'não';
 
   return {
     'NIF': nif,
     'Nome': name,
+    'Escalão': mappedTier,
     'Escola': school,
     'Tem Kit?': mappedHasKit,
     'Rejeitou Kit?': mappedHasRejectedKit,
-    'Tipo do PC': pcType,
-    'Estado do PC': pcState,
+    'Tipo do PC': pcType.toUpperCase(),
+    'Estado do PC': pcState.toLowerCase(),
   };
 }

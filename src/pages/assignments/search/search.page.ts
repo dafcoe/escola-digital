@@ -12,8 +12,12 @@ import {
 import {
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT,
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT_ALTERNATIVE,
+  ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_TIER,
+  ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_TIER_ALTERNATIVE,
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_STUDENT,
+  ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_TIER,
   ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_STUDENT,
+  ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_TIER,
   ASSIGNMENTS_SELECTOR_SEARCH_NIF,
   ASSIGNMENTS_SELECTOR_SEARCH_SUBMIT,
   ASSIGNMENTS_SELECTOR_SEARCH_TAB,
@@ -67,15 +71,15 @@ async function collectAssignment(nif: string): Promise<AssignmentInterface> {
     unassigned: collectAssignmentFromSearchResultUnassigned,
     'unassigned-and-rejected': collectAssignmentFromSearchResultUnassignedAndRejected,
   };
-  const searchResultType = await getSearchResultType();
+  const searchResultType = await getSearchResultType(nif);
 
   if (!searchResultType) throw new Error('An unexpected error has occurred while collecting an assignment');
 
   return await searchResultTypeActionMap[searchResultType](nif);
 }
 
-async function getSearchResultType(): Promise<SearchResultType | undefined> {
-  const isInvalid = await isSearchResultInvalid();
+async function getSearchResultType(nif: string): Promise<SearchResultType | undefined> {
+  const isInvalid = nif.length < 3 || await isSearchResultInvalid();
   if (isInvalid) return 'invalid';
 
   const isAssigned = await isSearchResultAssigned();
@@ -124,6 +128,7 @@ async function collectAssignmentFromSearchResultInvalid(nif: string): Promise<As
   return {
     nif,
     name: '',
+    tier: '',
     school: '',
     hasKit: false,
     hasRejectedKit: false,
@@ -142,10 +147,12 @@ async function collectAssignmentFromSearchResultAssigned(nif: string): Promise<A
   const student = await elementExists(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
     ? await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
     : await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT_ALTERNATIVE);
+
   const name = student.split('-').map((studentPart) => studentPart.trim())[1];
 
-  // Get school from detail page
-  // const school = await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_SCHOOL);
+  const tier = await elementExists(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_STUDENT)
+    ? await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_TIER)
+    : await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_ASSIGNED_TIER_ALTERNATIVE);
 
   const [pcType, pcState] = await page.evaluate((searchText) => {
     const rows = Array.from(document.querySelectorAll('table tr'));
@@ -163,6 +170,7 @@ async function collectAssignmentFromSearchResultAssigned(nif: string): Promise<A
   return {
     nif,
     name,
+    tier,
     school,
     hasKit: true,
     hasRejectedKit: false,
@@ -176,16 +184,15 @@ async function collectAssignmentFromSearchResultUnassigned(nif: string): Promise
 
   await clickOnButton('table tbody tr:nth-of-type(2) td:nth-of-type(6) a:first-of-type');
   await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
-  await wait(250);
+  await wait(500);
 
   const name = await getSelectedOption(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_STUDENT);
-
-  // Get school from detail page
- //  const school = await getSelectedOption(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_SCHOOL);
+  const tier = await getSelectedOption(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_TIER);
 
   return {
     nif,
     name,
+    tier,
     school,
     hasKit: false,
     hasRejectedKit: false,
@@ -199,16 +206,15 @@ async function collectAssignmentFromSearchResultUnassignedAndRejected(nif: strin
 
   await clickOnButton('table tbody tr:nth-of-type(2) td:nth-of-type(6) a:first-of-type');
   await waitForElementNotVisible(SHARED_SELECTOR_LOADING);
-  await wait(250);
+  await wait(500);
 
   const name = await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_STUDENT);
-
-  // Get school from detail page
-  // const school = await getInputValue(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_SCHOOL);
+  const tier = await getSelectedOption(ASSIGNMENTS_SELECTOR_SEARCH_DETAIL_UNASSIGNED_AND_REJECTED_TIER);
 
   return {
     nif,
     name,
+    tier,
     school,
     hasKit: false,
     hasRejectedKit: true,
