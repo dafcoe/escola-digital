@@ -16,7 +16,9 @@ async function run(): Promise<void> {
 }
 
 async function generateStudentReports(): Promise<void> {
-  const studentNifsByClassName: Record<string, string[]>[] = [];
+  const studentNifsByClassName: Record<string, string[]>[] = [
+    { 'Class 1': ['123456789'] },
+  ];
 
   for (let index = 0; index < studentNifsByClassName.length; index++) {
     const nifsByClassName = Object.values(studentNifsByClassName)[index];
