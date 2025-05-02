@@ -3,7 +3,7 @@ import { login } from './pages/login/login.page';
 import { logout } from './pages/logout/logout.page';
 import { generateStudentAssignmentsByClassNameReport } from './reports/assignments-student';
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   const browser = await puppeteer.launch();
   globalThis.page  = await browser.newPage();
   await globalThis.page.setViewport({ width: 1920, height: 1080 });
@@ -17,7 +17,7 @@ async function run(): Promise<void> {
 
 async function generateStudentReports(): Promise<void> {
   const studentNifsByClassName: Record<string, string[]>[] = [
-    { 'Class 1': ['123456789'] },
+    { 'Ex_Alunos': ['253092299'] },
   ];
 
   for (let index = 0; index < studentNifsByClassName.length; index++) {
@@ -31,4 +31,4 @@ async function generateStudentReports(): Promise<void> {
   }
 }
 
-run();
+// run();
