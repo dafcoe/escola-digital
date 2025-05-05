@@ -3,21 +3,44 @@ import { login } from './pages/login/login.page';
 import { logout } from './pages/logout/logout.page';
 import { generateStudentAssignmentsByClassNameReport } from './reports/assignments-student';
 
-export async function run(): Promise<void> {
+async function run(): Promise<void> {
   const browser = await puppeteer.launch();
   globalThis.page  = await browser.newPage();
   await globalThis.page.setViewport({ width: 1920, height: 1080 });
+  const cliArguments = getCliArguments();
 
   await login();
-  await generateStudentReports();
+  await generateStudentReports(cliArguments);
   await logout();
 
   await browser.close();
 }
 
-async function generateStudentReports(): Promise<void> {
+function getCliArguments()  {
+  const args: Record<string, string> = {};
+
+  process.argv.slice(2).forEach((arg) => {
+    const [key, value] = arg.split('=');
+
+    args[key.replace('--', '')] = value;
+  });
+
+  if (!args.name || !args.nifs) {
+    throw new Error('"name" or "nifs" argument is missing');
+  }
+
+  return {
+    [args.name || 'report-name']: (args.nifs || '')
+      .replaceAll(' ', '')
+      .split(',')
+      .filter((nif) => nif.length > 0),
+  };
+};
+
+async function generateStudentReports(cliArguments: Record<string, string[]> = {}): Promise<void> {
   const studentNifsByClassName: Record<string, string[]>[] = [
-    { 'Ex_Alunos': ['253092299'] },
+    cliArguments,
+    // { 'report-name': ['123456789'] },
   ];
 
   for (let index = 0; index < studentNifsByClassName.length; index++) {
@@ -31,4 +54,4 @@ async function generateStudentReports(): Promise<void> {
   }
 }
 
-// run();
+run();

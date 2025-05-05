@@ -10,5 +10,5 @@ export function writeDataToSpreadsheet<T>(
     xlsx.utils.book_append_sheet(book, xlsx.utils.json_to_sheet(value), key);
   });
 
-  xlsx.writeFile(book, `./spreadsheets/${bookName}.xlsx`);
+  xlsx.writeFile(book, `./reports/${bookName}.xlsx`);
 }
