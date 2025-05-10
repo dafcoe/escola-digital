@@ -4,8 +4,10 @@ import { logout } from './pages/logout/logout.page';
 import { generateStudentAssignmentsByClassNameReport } from './reports/assignments-student';
 
 async function run(): Promise<void> {
+  const executablePath = puppeteer.executablePath();
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   globalThis.page  = await browser.newPage();
