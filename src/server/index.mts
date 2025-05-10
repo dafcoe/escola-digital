@@ -5,6 +5,8 @@ import fastifyStatic from '@fastify/static';
 import path from 'path';
 import { registerRoutes } from './routes.mjs';
 
+const host = process.env.HOST || '0.0.0.0';
+const port = +(process.env.PORT || 3000);
 const fastify = Fastify();
 await fastify.register(cors, { origin: '*' });
 await fastify.register(FastifySSEPlugin);
@@ -17,7 +19,7 @@ registerRoutes(fastify);
 startServer();
 
 function startServer() {
-  fastify.listen({ port: 3000 }, (err, address) => {
+  fastify.listen({ host, port }, (err, address) => {
     if (err) {
       console.error(err);
       process.exit(1);
