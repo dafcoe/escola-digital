@@ -2,6 +2,7 @@ import puppeteer  from 'puppeteer';
 import { login } from './pages/login/login.page';
 import { logout } from './pages/logout/logout.page';
 import { generateStudentAssignmentsByClassNameReport } from './reports/assignments-student';
+import { CLASSES } from './classes';
 
 async function run(): Promise<void> {
   const executablePath = puppeteer.executablePath();
@@ -22,7 +23,7 @@ async function run(): Promise<void> {
 }
 
 async function generateStudentReports(): Promise<void> {
-  const studentNifsByClassName: Record<string, string[]>[] = [];
+  const studentNifsByClassName: Record<string, string[]>[] = CLASSES;
 
   for (let index = 0; index < studentNifsByClassName.length; index++) {
     const nifsByClassName = Object.values(studentNifsByClassName)[index];
